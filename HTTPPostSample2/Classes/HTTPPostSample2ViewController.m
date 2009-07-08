@@ -31,21 +31,9 @@
 {
 	// Content-Type: multipart/form-data; boundary=AaB03x
 	NSMutableString *prePost = [[NSMutableString alloc] init];
-	//[prePost appendString:[NSString stringWithFormat:@"Content-Type: multipart/form-data; boundary=%@", boundary]];
+	
 	prePost = [self generateMultiPartString:@"soundFile" kValue:@"soundName"];
-	//[prePost appendString:[NSString stringWithFormat:@"%@%@", br, br]];
-	// --AaB03x
-	//[prePost appendString:[NSString stringWithFormat:@"--%@\r\n\r\n", boundary]];
-	// Content-Disposition: form-data;
-	//[prePost appendString:@"Content-Disposition: form-data;\r\n\r\n"];
-	// name=valueの組み合わせ
-	//[prePost appendString:[NSString stringWithFormat:@"%@\r\n\r\n",stringData]];
 	
-	// --AaB03x
-	//[prePost appendString:[NSString stringWithFormat:@"--%@\r\n\r\n", boundary]];
-	
-	// Content-Disposition: form-data; name=\"%@; filename=\"somefile\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", fileName
-	//[prePost appendString:[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@.caf\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n", fileName, fileName]];
 	[prePost appendString:[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@.caf\"\r\nContent-Type: application/octet-strem\r\n\r\n", fileName, fileName]];
 	
 	NSString *post = prePost;// [NSString stringWithCString:prePost encoding:NSASCIIStringEncoding];
@@ -56,8 +44,6 @@
 	NSMutableData *postData = [[NSMutableData alloc] initWithLength:[postHeaderData length]];
 	
 	[postData setData:postHeaderData];
-	
-	//[postData appendData:uploadData];
 	
 	[postData appendData:[@"\r\n--AaB03x--\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
 	[postData appendData:uploadData];
@@ -86,16 +72,6 @@
 										returningResponse:&response
 													error:&error];
 	NSLog(@"%@", [[NSString alloc] initWithData:res encoding:NSUTF8StringEncoding]);
-	/*
-	if(conn)
-	{
-		NSLog(@"connection succeed.");
-	}
-	else
-	{
-		NSLog(@"connection failed.");
-	}
-	 */
 }
 
 -(NSData *)getUploadFile
@@ -119,8 +95,6 @@
 -(IBAction) upload
 {
 	// アップロード先URL
-	//NSString *urlStr = @"http://soundmap.sakura.ne.jp/soundmap/sounddata/";
-	NSString *urlStr = @"http://localhost:8888/soundmap/uploadsample.php";
 	// 文字列データの作成
 	NSArray *stringKeys = [[NSArray alloc] initWithObjects:@"upload", @"dummy",nil];
 	NSArray *stringValues = [[NSArray alloc] initWithObjects:@"snd", @"dum", nil];
@@ -138,65 +112,6 @@
 	
 	NSString *res = [postHelper send];
 	NSLog(res);
-	
-	/*
-	//NSString *postText = @"id=10&recDate=090000&longitude=123.334343&latitude=34.53&altitude=1&soundTitle=title&fileName=fileName&sDate=123435&eDate=2123400&userName=mmlemon";
-	//NSString *postText = @"upload=fromiPhone";
-	
-	/////////////////////////// テスト
-	
-	NSMutableString *post = [[NSMutableString alloc] init];
-	
-	[post appendString:[self generateMultiPartString:@"upload" kValue:@"key"]];
-	
-	[post appendString:@"--AaB03x\r\nContent-Disposition: form-data; name=\"soundFile\"; filename=\"sample.caf\"\r\nContent-Type: application/octet-stream\r\nContent-Transfer-Encoding: binary\r\n\r\n"];
-	
-	NSLog(post);
-	
-	NSData *hData = [post dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-	NSMutableData *pData = [[NSMutableData alloc] initWithLength:[hData length]];
-	[pData setData:hData];
-	
-	[pData appendData:[self getUploadFile]];
-	
-	[pData appendData: [@"\r\n--AaB03x--" dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
-	NSString *postLength = [NSString stringWithFormat:@"%d", pData];
-	//[postData appendData: [@"\r\n--AaB03x--" dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES]];
-	
-	//NSString *postLength = [NSString stringWithFormat:@"%d", postText];
-	
-	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:urlStr] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30] autorelease];
-	//NSData *pData = [postText dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES];
-	[request setHTTPMethod:@"POST"];
-	[request setValue:postLength forHTTPHeaderField:@"Content-Length"];
-	NSString *boundary = @"AaB03x";
-	NSString *br = @"\r\n";
-	[request setValue:[NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary] forHTTPHeaderField:@"Content-Type"];
-	[request setHTTPBody:pData];
-	
-	NSURLResponse *response;
-	NSError *error;
-	NSData *res = [NSURLConnection sendSynchronousRequest:request
-										returningResponse:&response
-													error:&error];
-	NSLog(@"%@", [[NSString alloc] initWithData:res encoding:NSUTF8StringEncoding]);
-	*/
-	// データ
-	/*
-	NSString *dataPath = [[NSBundle mainBundle] pathForResource:@"83978" ofType:@"caf"];
-	NSFileManager *fm = [NSFileManager defaultManager];
-	NSData *data;
-	if([fm fileExistsAtPath:dataPath])
-	{
-		NSFileHandle *handle = [NSFileHandle fileHandleForReadingAtPath:dataPath];
-		data = [handle readDataToEndOfFile];
-		[handle closeFile];
-		//[NSKeyedUnarchiver unarchiveObjectWithFile:dataPath];
-	}
-	//NSData *data = [postText dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES];
-	NSString *fileName = @"soundFile";
-	[self uploadFile:urlStr strData:postText fileData:data file:fileName];
-	*/
 }
 
 /*
