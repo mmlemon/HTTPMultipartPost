@@ -46,20 +46,21 @@
 {
 	NSMutableString *prePost = [[NSMutableString alloc] init];
 	// ----> データを作成
-	
-	// [未実装]
 	[prePost appendString:[NSString stringWithFormat:@"--%@\r\n", boundary]];
-	[prePost appendString:[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\nContent-Type: application/octet-strem\r\nContent-Transfer-Encoding: binary\r\n\r\n", postLabel, orgFileName]];
+	[prePost appendString:[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"; filename=\"%@\"\r\nContent-Type: application/octet-stream\r\n\r\n", postLabel, orgFileName]];
 	
 	NSLog(@"prePost:%@",prePost);
 	// <---- データを作成
 	NSMutableData *returnValue = [[NSMutableData alloc] init];
+	// headerdata
 	[returnValue appendData:[prePost dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
+	
+	// 実際のデータを追加する
+	[returnValue appendData:uploadData];
 	
 	[returnValue appendData:[[NSString stringWithFormat:@"\r\n--%@--", boundary] dataUsingEncoding:NSUTF8StringEncoding
 				allowLossyConversion:YES]];
-	// 実際のデータを追加する
-	[returnValue appendData:uploadData];
+	
 	return returnValue;
 }
 
@@ -120,7 +121,7 @@
 		 ]];
 	}
 	
-	
+	NSLog(@"%d", [postData length]);
 	// HTTPの組み立て
 	NSMutableURLRequest *request = [[[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:[self url]] cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:30] autorelease];
 	[request setHTTPMethod:@"POST"];
